@@ -41,17 +41,28 @@ namespace Blink.Server.Services
             return false;
         }
 
-        public async Task<bool> LoginAsync(LoginDto model)
+        public async Task<UserDto> LoginAsync(LoginDto model)
         {
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+
             if (result.Succeeded)
             {
-                _logger.LogInformation("User {Email} logged in successfully.", model.Email);
-                return true;
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                if (user != null)
+                {
+                    _logger.LogInformation("User {Email} logged in successfully.", model.Email);
+
+                    return new UserDto
+                    {
+                        Email = user.Email,
+                        Id = user.Id
+                    };
+                }
             }
 
             _logger.LogWarning("Failed login attempt for {Email}.", model.Email);
-            return false;
+            return null;
         }
     }
 }

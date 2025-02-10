@@ -143,3 +143,4 @@ C:\Users\iandz\Desktop\Projects\Blink\Blink.Server\obj\Debug\net8.0\refint\Blink
 C:\Users\iandz\Desktop\Projects\Blink\Blink.Server\obj\Debug\net8.0\Blink.Server.pdb
 C:\Users\iandz\Desktop\Projects\Blink\Blink.Server\obj\Debug\net8.0\Blink.Server.genruntimeconfig.cache
 C:\Users\iandz\Desktop\Projects\Blink\Blink.Server\obj\Debug\net8.0\ref\Blink.Server.dll
+C:\Users\iandz\Desktop\Projects\Blink\Blink.Server\obj\Debug\net8.0\Blink.Server.sourcelink.json
