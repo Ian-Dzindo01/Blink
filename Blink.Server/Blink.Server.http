@@ -1,0 +1,6 @@
+@Blink.Server_HostAddress = http://localhost:5154
+
+GET {{Blink.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
