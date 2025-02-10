@@ -1,5 +1,5 @@
-/* eslint-disable no-unused-vars */
 import { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
@@ -11,25 +11,18 @@ function Login() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const loginDto = { email, password };
-
         try {
-            const response = await fetch("http://localhost:5154/api/account/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(loginDto),
-            });
+            const response = await axios.post(
+                "http://localhost:5154/api/account/login",
+                { email, password },
+                { withCredentials: true }   // Allows for cookies to be sent
+            );
 
-            if (response.ok) {
+            if (response.status === 200) {
                 navigate("/chat");
-            } else {
-                const errorData = await response.json();
-                setError(errorData.message || "Login failed");
             }
         } catch (error) {
-            setError("An error occurred during login");
+            setError(error.response?.data?.message || "Login failed");
         }
     };
 
@@ -58,7 +51,6 @@ function Login() {
                 </div>
                 <button type="submit">Login</button>
             </form>
-            <button onClick={() => navigate("/register")}>Go to Register</button>
         </div>
     );
 }

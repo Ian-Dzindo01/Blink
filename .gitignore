@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 
+appsettings.json
 .vs/
 .vscode/*
 !.vscode/extensions.json

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Blink.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+147b14737c2598e3cc09418e8ef1cf63f1c56264")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e2abd01269ae84a86dabef8ac3c803d5b21b32d3")]
 [assembly: System.Reflection.AssemblyProductAttribute("Blink.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Blink.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

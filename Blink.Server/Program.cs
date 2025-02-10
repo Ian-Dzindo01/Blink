@@ -1,4 +1,4 @@
-using Blink.Data;
+﻿using Blink.Data;
 using Blink.Models;
 using Blink.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -28,12 +28,24 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]))
+            IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"])),
+            ClockSkew = TimeSpan.Zero
+        };
+
+        // Read token from HTTP-only cookies
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                context.Token = context.Request.Cookies["jwtToken"]; // Extract JWT from cookie
+                return Task.CompletedTask;
+            }
         };
     });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAuthorization();
 
 var connectionString = Environment.GetEnvironmentVariable("BlinkConnection", EnvironmentVariableTarget.Machine);
 

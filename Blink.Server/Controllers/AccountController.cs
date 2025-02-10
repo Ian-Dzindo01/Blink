@@ -14,11 +14,13 @@ namespace Blink.Server.Controllers
     {
         private readonly AccountService _accountService;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(AccountService accountService, IConfiguration configuration)
+        public AccountController(AccountService accountService, IConfiguration configuration, ILogger<AccountController> logger)
         {
             _accountService = accountService;
             _configuration = configuration;
+            _logger = logger;
         }
 
         [HttpPost("register")]
@@ -55,8 +57,7 @@ namespace Blink.Server.Controllers
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, user.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            };
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())};
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -65,14 +66,21 @@ namespace Blink.Server.Controllers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(1),
+                expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: creds
             );
 
-            return Ok(new
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            Response.Cookies.Append("jwtToken", tokenString, new CookieOptions
             {
-                token = new JwtSecurityTokenHandler().WriteToken(token)
+                HttpOnly = true, // Prevents JS access 
+                Secure = true,   // Cookie is only sent over HTTPS
+                SameSite = SameSiteMode.Strict, // Prevents CSRF attacks
+                Expires = DateTime.UtcNow.AddHours(1)
             });
+
+            return Ok(new { message = "Login successful." });
         }
     }
 }
