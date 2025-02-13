@@ -1,22 +1,27 @@
 ﻿using Blink.Data;
 using Blink.Models;
-using Blink.Server.Services;
+using Blink.Server.Hubs;
+using Blink.Server.Services.Implementations;
+using Blink.Service.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost", policy =>
         policy.WithOrigins("https://localhost:5173")
-              .AllowCredentials()
               .AllowAnyHeader()
-              .AllowAnyMethod());
+              .AllowAnyMethod()
+              .AllowCredentials());
+
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -33,19 +38,46 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero
         };
 
-        // Read token from HTTP-only cookies
         options.Events = new JwtBearerEvents
         {
             OnMessageReceived = context =>
             {
-                context.Token = context.Request.Cookies["jwtToken"]; // Extract JWT from cookie
+                context.Token = context.Request.Cookies["jwtToken"];
                 return Task.CompletedTask;
             }
         };
     });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Blink API", Version = "v1" });
+
+    options.AddSecurityDefinition("CookieAuth", new OpenApiSecurityScheme
+    {
+        Name = "jwtToken",
+        Type = SecuritySchemeType.ApiKey,
+        In = ParameterLocation.Cookie,
+        Description = "JWT authentication using cookies. No need to enter 'Bearer'.",
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "CookieAuth"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
+
 builder.Services.AddAuthorization();
 
 var connectionString = Environment.GetEnvironmentVariable("BlinkConnection", EnvironmentVariableTarget.Machine);
@@ -62,6 +94,10 @@ builder.Services.AddIdentity<User, IdentityRole>()
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
+builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 builder.Services.AddScoped<AccountService>();
 
 var app = builder.Build();
@@ -71,17 +107,16 @@ app.UseCors("AllowLocalhost");
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.MapFallbackToFile("/index.html");
 

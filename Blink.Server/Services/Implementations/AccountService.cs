@@ -1,23 +1,27 @@
 ﻿using Blink.Models;
 using Blink.Server.Models.DTO;
+using Blink.Service.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
-namespace Blink.Server.Services
+namespace Blink.Server.Services.Implementations
 {
     public class AccountService
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<AccountService> _logger;
+        private readonly ITokenService _tokenService;
 
         public AccountService(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            ILogger<AccountService> logger)
+            ILogger<AccountService> logger,
+            ITokenService tokenService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _tokenService = tokenService;
         }
 
         public async Task<bool> RegisterAsync(RegisterDto model)
@@ -52,6 +56,10 @@ namespace Blink.Server.Services
                 if (user != null)
                 {
                     _logger.LogInformation("User {Email} logged in successfully.", model.Email);
+
+                    var token = _tokenService.CreateJWT(user);
+
+                    _tokenService.SetJWT(token);
 
                     return new UserDto
                     {

@@ -144,3 +144,7 @@ C:\Users\iandz\Desktop\Projects\Blink\Blink.Server\obj\Debug\net8.0\Blink.Server
 C:\Users\iandz\Desktop\Projects\Blink\Blink.Server\obj\Debug\net8.0\Blink.Server.genruntimeconfig.cache
 C:\Users\iandz\Desktop\Projects\Blink\Blink.Server\obj\Debug\net8.0\ref\Blink.Server.dll
 C:\Users\iandz\Desktop\Projects\Blink\Blink.Server\obj\Debug\net8.0\Blink.Server.sourcelink.json
+C:\Users\iandz\Desktop\Projects\Blink\Blink.Server\bin\Debug\net8.0\Microsoft.Bcl.Memory.dll
+C:\Users\iandz\Desktop\Projects\Blink\Blink.Server\bin\Debug\net8.0\Microsoft.Extensions.ObjectPool.dll
+C:\Users\iandz\Desktop\Projects\Blink\Blink.Server\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\Users\iandz\Desktop\Projects\Blink\Blink.Server\bin\Debug\net8.0\System.Net.WebSockets.WebSocketProtocol.dll
